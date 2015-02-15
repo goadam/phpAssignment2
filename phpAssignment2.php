@@ -21,22 +21,26 @@
 <?php
 
 include 'storedInfo.php';
+$notValid = 0;
 $db = new mysqli('oniddb.cws.oregonstate.edu', 'martinad-db', $myPassword, 'martinad-db');
-if($db->connect_errno) {
-	die('No database connection');
-} else {
-	echo 'Database found', '<br>';
+if ($db->connect_errno) {
+    echo "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
 }
 
+
 if(isset($_GET['name'])) {
-	if(trim($_GET['name']) == "") {
+	$videoName = $_GET['name'];
+	if(trim($videoName) == "") {
 	echo 'You must enter a video name.', '<br>';
+	$notValid = 1;
 }
 }
 
 if(isset($_GET['category'])) {
-	if(trim($_GET['category']) == "") {
+	$videoCat = $_GET['category'];
+	if(trim($videoCat) == "") {
 	echo 'You must enter a category.', '<br>';
+	$notValid = 1;
 } 
 }
 
@@ -46,6 +50,45 @@ if(isset($_GET['length'])) {
 		echo 'You must enter a length.';
 	} else if (!(ctype_digit($len))) {
 		echo 'Length must be a numeric value';
+		$notValid = 1;
+	}
+}
+
+
+
+
+if($videoName && $videoCat && $len && $valid == 0 ) {
+	/* Prepared statement, stage 1: prepare */
+if (!($stmt = $db->prepare("INSERT INTO videoStore(name) VALUES (?)"))) {
+    echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
+}
+
+if (!$stmt->bind_param("s", $videoName)) {
+    echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
+}
+
+if (!$stmt->execute()) {
+    echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
+}
+
+}
+
+printTable();
+
+//functions
+function insertRow($nm, $cat, $l) {
+	echo 'insert row', '<br>';
+	echo $nm;
+	$stmt = $db->prepare("INSERT INTO videoStore (name) VALUES (?)");
+	$stmt->bind_param("s", $nm);
+	
+	$stmt->execute();
+}
+
+function printTable() {
+	$result = $db->query("SELECT * FROM martinad-db");
+	while($row = $result->fetch_object()) {
+		echo $row->name;
 	}
 }
 	
