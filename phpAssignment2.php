@@ -59,11 +59,11 @@ if(isset($_GET['length'])) {
 
 if($videoName && $videoCat && $len && $valid == 0 ) {
 	/* Prepared statement, stage 1: prepare */
-if (!($stmt = $db->prepare("INSERT INTO videoStore(name) VALUES (?)"))) {
+if (!($stmt = $db->prepare("INSERT INTO videoStore(name, category, length) VALUES (?, ?, ?)"))) {
     echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
 }
 
-if (!$stmt->bind_param("s", $videoName)) {
+if (!$stmt->bind_param("sss", $videoName, $videoCat, $len)) {
     echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
 }
 
@@ -73,23 +73,18 @@ if (!$stmt->execute()) {
 
 }
 
-printTable();
-
-//functions
-function insertRow($nm, $cat, $l) {
-	echo 'insert row', '<br>';
-	echo $nm;
-	$stmt = $db->prepare("INSERT INTO videoStore (name) VALUES (?)");
-	$stmt->bind_param("s", $nm);
-	
-	$stmt->execute();
+//display table
+if (!($result = $db->prepare("SELECT name, category, length FROM videoStore"))) {
+    echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
 }
 
-function printTable() {
-	$result = $db->query("SELECT * FROM martinad-db");
-	while($row = $result->fetch_object()) {
-		echo $row->name;
+$result->execute();
+$result->bind_result($videoName, $videoCat, $len);
+
+while($result->fetch()) {
+		echo $videoName, ' ';
+		echo $videoCat, ' ';
+		echo $len, '<br>';
 	}
-}
 	
 ?>
