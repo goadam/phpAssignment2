@@ -25,7 +25,7 @@ include 'storedInfo.php';
 $notValid = 0;
 $db = new mysqli('oniddb.cws.oregonstate.edu', 'martinad-db', $myPassword, 'martinad-db');
 if ($db->connect_errno) {
-    echo "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
+    echo "Failed to connect to MySQL: (" . $db->connect_errno . ") " . $db->connect_error;
 }
 
 
@@ -59,7 +59,7 @@ if(isset($_GET['length'])) {
 if(isset($_POST['delete'])) {
 	echo 'delete';
 	if (!($stmt = $db->prepare("DELETE FROM videoStore WHERE id = ?"))) {
-		echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
+		echo "Prepare failed: (" . $db->errno . ") " . $db->error;
 	}
 
 	if (!$stmt->bind_param("i", $_POST['vid'])) {
@@ -71,12 +71,52 @@ if(isset($_POST['delete'])) {
 	}
 }
 
+//update
+if(isset($_POST['check'])) {
+	//Select first
+	if (!($stmt = $db->prepare("SELECT rented FROM videoStore WHERE id = ?"))) {
+		echo "Prepare failed: (" . $db->errno . ") " . $db->error;
+	}
+	
+	if (!$stmt->bind_param("i", $_POST['vid'])) {
+		echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
+	}
+	
+	if (!$stmt->execute()) {
+		echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
+	}
+
+	$stmt->bind_result($r);
+	$stmt->fetch();
+	if($r == 1) {
+		$r = 0;
+	} else {
+		$r = 1;
+	}
+	
+	$stmt->close();
+	
+	if (!($stmt2 = $db->prepare("UPDATE videoStore SET rented = ? WHERE id = ?"))) {
+		echo "Prepare failed: (" . $db->errno . ") " . $db->error;
+	}
+
+	if (!$stmt2->bind_param("ii", $r, $_POST['vid'])) {
+		echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
+	}
+
+	if (!$stmt2->execute()) {
+		echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
+	}
+	
+	$stmt2->close();
+}
 
 
-if($videoName && $videoCat && $len && $valid == 0 ) {
+
+if($videoName && $videoCat && $len && $notValid == 0 ) {
 	/* Prepared statement, stage 1: prepare */
 if (!($stmt = $db->prepare("INSERT INTO videoStore(name, category, length) VALUES (?, ?, ?)"))) {
-    echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
+    echo "Prepare failed: (" . $db->errno . ") " . $db->error;
 }
 
 if (!$stmt->bind_param("sss", $videoName, $videoCat, $len)) {
@@ -90,12 +130,12 @@ if (!$stmt->execute()) {
 }
 
 //display table
-if (!($result = $db->prepare("SELECT id, name, category, length FROM videoStore"))) {
-    echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
+if (!($result = $db->prepare("SELECT id, name, category, length, rented FROM videoStore"))) {
+    echo "Prepare failed: (" . $db->errno . ") " . $db->error;
 }
 
 $result->execute();
-$result->bind_result($id, $videoName, $videoCat, $len);
+$result->bind_result($id, $videoName, $videoCat, $len, $rent);
 
 echo "<table border=1>
 <tr>
@@ -103,6 +143,7 @@ echo "<table border=1>
 <th>Name</th>
 <th>Category</th>
 <th>Length</th>
+<th>Status</th>
 </tr>";
 while($result->fetch()) {
 	    echo "<form action=phpAssignment2.php method=post>";
@@ -111,9 +152,17 @@ while($result->fetch()) {
 		echo "<td>" . "<input type=text name=vName value=" . $videoName . " </td>";
 		echo "<td>" . "<input type=text name=vCat value=" . $videoCat . " </td>";
 		echo "<td>" . "<input type=text name=vLen value=" . $len . " </td>";
+		
+		if($rent == 1) {
+			$stat = "available";
+		} else {$stat = "checked out";}
+		
+		echo "<td>" . "<input type=text name=vStat value=" . $stat . " </td>";
 		echo "<td>" . "<input type=submit name=delete value='delete'" . "</td>";
+		echo "<td>" . "<input type=submit name=check value='check-in/check-out'" . "</td>";
 		echo "</tr>";
 		echo "</form>";
 	}
 	echo "</table>";
+	$result->close();
 ?>
