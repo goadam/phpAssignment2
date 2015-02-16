@@ -1,0 +1,45 @@
+commit 68a88ec863f763c4669d39fb00a00e549146c096
+Author: Adam Martinez <adam70181@yahoo.com>
+Date:   Sun Feb 15 22:37:31 2015 -0600
+
+    final, turn in
+
+commit 8840d0e31ae15ebf1be367e8d7d7d618e5ac7db3
+Author: Adam Martinez <adam70181@yahoo.com>
+Date:   Sun Feb 15 19:43:35 2015 -0600
+
+    checkin checkout working
+
+commit faf11fdbb1a02a72f07ef68bbb08c58d5acbd3e6
+Author: Adam Martinez <adam70181@yahoo.com>
+Date:   Sun Feb 15 17:53:43 2015 -0600
+
+    delete is working
+
+commit 7020f0d90b49e5cbafb8a9937498ccd1f258a2b8
+Author: Adam Martinez <adam70181@yahoo.com>
+Date:   Sun Feb 15 17:04:53 2015 -0600
+
+    insert and display workin
+
+commit 352b022be5f9e709fb710eda8234f2dc1b33f71a
+Author: Adam Martinez <adam70181@yahoo.com>
+Date:   Sun Feb 15 16:36:31 2015 -0600
+
+    insert is working
+
+commit 02bb66f868c045abbbcbf992c6ac73a7882f34c3
+Author: Adam Martinez <adam70181@yahoo.com>
+Date:   Sun Feb 15 14:05:17 2015 -0600
+
+    html boxes with error messages
+
+commit e94a1d3e2c13ca3f84394a21f8dfcea758203f59
+Author: Adam Martinez <adam70181@yahoo.com>
+Date:   Sun Feb 15 13:11:20 2015 -0600
+
+    Initial commit. database found
+
+commit 806cdf80b148695d6476e7f65e8331a2edd07fbc
+Author: Adam Martinez <adam70181@yahoo.com>
+Date:   Sun Feb 15 13:01:01 2015 -0600
